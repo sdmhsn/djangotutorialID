@@ -1,29 +1,55 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
+from django.views import generic
 
 from .models import Question, Choice
 
 # Create your views here.
 
 
+""" # fbv
 def index(request):
     latest_question_list = Question.objects.order_by('-pub_date')[:5]
     return render(
         request,
         template_name='polls/index.html',
         context={'latest_question': latest_question_list}
-    )
+    ) """
 
 
+# cbv
+class IndexView(generic.ListView):
+    template_name = 'polls/index.html'
+    context_object_name = 'latest_question'
+
+    def get_queryset(self):
+        """Return the last five published questions."""
+        return Question.objects.order_by('-pub_date')[:5]
+
+
+""" # fbv
 def detail(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
-    return render(request, 'polls/detail.html', {'question': question})
+    return render(request, 'polls/detail.html', {'question': question}) """
 
 
+# cbv
+class DetailView(generic.DetailView):
+    template_name = 'polls/detail.html'
+    model = Question
+
+
+""" # fbv
 def results(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
-    return render(request, 'polls/results.html', {'question': question})
+    return render(request, 'polls/results.html', {'question': question}) """
+
+
+# cbv
+class ResultsView(generic.DetailView):  # menggunakan DetailView
+    model = Question
+    template_name = 'polls/results.html'
 
 
 def vote(request, question_id):
